@@ -11,9 +11,9 @@
             --text-dark: #222;
             --card-bg: rgba(255, 255, 255, 0.07);
             --modal-bg: #f9f9f9;
-            --lecture-color: #e3dafc;
-            --practice-color: #c9f1ff;
-            --lab-color: #d2f8d2;
+            --lecture-color: #d3c3f7;
+            --practice-color: #bceef7;
+            --lab-color: #bff2bf;
         }
 
         body {
@@ -24,9 +24,16 @@
             padding: 20px;
         }
 
-        h2 {
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(25, 25, 35, 0.95);
+            padding: 12px 20px;
+            font-weight: 600;
+            font-size: 18px;
             text-align: center;
-            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
         }
 
         .toggle-container {
@@ -38,6 +45,7 @@
 
         .toggle-label {
             margin-right: 10px;
+            margin-top: 20px;
             font-weight: 600;
         }
 
@@ -46,6 +54,8 @@
             display: inline-block;
             width: 60px;
             height: 30px;
+            margin-top: 20px;
+            scale: 1.2;
         }
 
         .toggle-switch input {
@@ -95,6 +105,20 @@
             vertical-align: top;
         }
 
+        tr {
+            transition: background 0.3s;
+            animation: fadeInRow 0.3s ease-in;
+        }
+
+        tr:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        @keyframes fadeInRow {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         th {
             background-color: rgba(255,255,255,0.1);
             color: white;
@@ -110,17 +134,26 @@
 
         .subject-cell {
             padding: 25px;
-            background-color: var(--card-bg);
             border-radius: 0 8px 8px 0;
             cursor: pointer;
-            transition: 0.3s;
             margin-bottom: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.25);
+            transition: 0.3s ease;
         }
 
         .subject-cell:hover {
             background-color: rgba(255,255,255,0.15);
             transform: scale(1.01);
+        }
+
+        .subject-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .subject-location {
+            font-size: 13px;
+            opacity: 0.8;
         }
 
         .lecture { background-color: var(--lecture-color); color: var(--text-dark); }
@@ -181,13 +214,15 @@
                 font-size: 14px;
                 padding: 15px;
             }
+            .modal-content {
+                padding: 20px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
-
-<h2>Расписание</h2>
-
+<header class="top-bar">📅 Моё расписание</header>
 <div class="toggle-container">
     <span class="toggle-label">Верхняя / Нижняя неделя</span>
     <label class="toggle-switch">
@@ -276,7 +311,7 @@
         <button onclick="saveNote()" style="margin-top:10px">💾 Сохранить</button>
     </div>
 </div>
-
+<button onclick="scrollToToday()" style="position:fixed; bottom:20px; right:20px; z-index:100; background:#ab47bc; color:white; border:none; border-radius:8px; padding:10px 15px; box-shadow:0 4px 8px rgba(0,0,0,0.3)">Сегодня</button>
 <script>
     const toggle = document.getElementById('weekToggle');
     toggle.addEventListener('change', () => {
@@ -310,6 +345,14 @@
 
     function closeModal() {
         modal.style.display = 'none';
+    }
+
+    function scrollToToday() {
+        const days = ["ВС","ПН","ВТ","СР","ЧТ","ПТ","СБ"];
+        const today = new Date().getDay();
+        const label = days[today] || "ПН";
+        const dayCell = [...document.querySelectorAll(".day")].find(cell => cell.textContent.trim() === label);
+        if (dayCell) dayCell.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 </script>
 
