@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Расписание</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
+            --text-dark: #222;
+            --card-bg: rgba(255, 255, 255, 0.07);
+            --modal-bg: #f9f9f9;
+            --lecture-color: #e3dafc;
+            --practice-color: #c9f1ff;
+            --lab-color: #d2f8d2;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg-main);
+            color: #fff;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .toggle-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .toggle-label {
+            margin-right: 10px;
+            font-weight: 600;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #888;
+            transition: 0.4s;
+            border-radius: 30px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #ab47bc;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 20px;
+        }
+
+        th, td {
+            padding: 20px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        td.day {
+            width: 80px;
+            font-weight: bold;
+            text-align: center;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 8px 0 0 8px;
+        }
+
+        .subject-cell {
+            padding: 25px;
+            background-color: var(--card-bg);
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .subject-cell:hover {
+            background-color: rgba(255,255,255,0.15);
+            transform: scale(1.01);
+        }
+
+        .lecture { background-color: var(--lecture-color); color: var(--text-dark); }
+        .practice { background-color: var(--practice-color); color: var(--text-dark); }
+        .lab { background-color: var(--lab-color); color: var(--text-dark); }
+
+        .hidden { display: none; }
+
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--modal-bg);
+            color: #333;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+        }
+
+        .modal-content textarea {
+            width: 100%;
+            height: 120px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px; right: 15px;
+            cursor: pointer;
+            font-size: 18px;
+            color: #888;
+        }
+
+        @media (max-width: 600px) {
+            .subject-cell {
+                font-size: 14px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h2>Расписание</h2>
+
+<div class="toggle-container">
+    <span class="toggle-label">Верхняя / Нижняя неделя</span>
+    <label class="toggle-switch">
+        <input type="checkbox" id="weekToggle">
+        <span class="slider"></span>
+    </label>
+</div>
+
+<table id="scheduleTable">
+    <tr><th>День</th><th>Предметы</th></tr>
+    <tr class="upper"><td class="day">ПН</td><td>
+        <div class="subject-cell practice" data-id="upn1">🏃‍♂️ Физ-ра</div>
+        <div class="subject-cell lecture" data-id="upn2">📖 Физика (лек.) а. 301/2</div>
+        <div class="subject-cell practice" data-id="upn3">✍️ Инженерная графика (пр.) а. 511, 902/7</div>
+    </td></tr>
+
+    <tr class="lower hidden"><td class="day">ПН</td><td>
+        <div class="subject-cell practice" data-id="lpn1">🏃‍♂️ Физ-ра</div>
+        <div class="subject-cell lecture" data-id="lpn2">📖 Физика (лек.) а. 301/2</div>
+        <div class="subject-cell practice" data-id="lpn3">✍️ Инженерная графика (пр.) а. 511, 902/7</div>
+        <div class="subject-cell practice" data-id="lpn4">✍️ Высшмат (пр.) а. 534</div>
+    </td></tr>
+
+    <tr class="upper"><td class="day">ВТ</td><td>
+        <div class="subject-cell lecture" data-id="uvt1">📖 Высшмат (лек.) а. 533</div>
+        <div class="subject-cell lecture" data-id="uvt2">📖 Теор. мех. (лек.) а. 509</div>
+        <div class="subject-cell lab" data-id="uvt3">🔧 Инф. (лаб.) (1-я подгр.) а. 410/4<br>Охр. тр. (лаб.) (2-я подгр.) а. 125</div>
+        <div class="subject-cell practice" data-id="uvt4">✍️ Теор. мех. (пр.) а. 425</div>
+    </td></tr>
+
+    <tr class="lower hidden"><td class="day">ВТ</td><td>
+        <div class="subject-cell practice" data-id="lvt1">✍️ Высшмат (пр.) а. 534</div>
+        <div class="subject-cell lecture" data-id="lvt2">📖 Теор. мех. (лек.) а. 509</div>
+        <div class="subject-cell lab" data-id="lvt3">🔧 Охр. тр. (лаб.) (1-я подгр.) а. 125<br>Инф. (лаб.) (2-я подгр.) а. 410/4</div>
+        <div class="subject-cell practice" data-id="lvt5">✍️ Теор. мех. (пр.) а. 425</div>
+    </td></tr>
+
+    <tr class="upper"><td class="day">СР</td><td>
+        <div class="subject-cell lecture" data-id="usr1">-</div>
+        <div class="subject-cell practice" data-id="usr2">✍️ Физика (пр.) а. 510/2 </div>
+        <div class="subject-cell practice" data-id="usr3">✍️ ИнЯз (пр.) а. 521, 529</div>
+        <div class="subject-cell lecture" data-id="usr4">📖 Соц. Психология (лек.) а. 531</div>
+    </td></tr>
+
+    <tr class="lower hidden"><td class="day">СР</td><td>
+        <div class="subject-cell lecture" data-id="lsr1">-</div>
+        <div class="subject-cell practice" data-id="lsr2">✍️ Соц. Психология (пр.) а. 303</div>
+        <div class="subject-cell practice" data-id="lsr3">✍️ ИнЯз (пр.) а. 521, 529</div>
+        <div class="subject-cell lecture" data-id="lsr4">📖 Соц. Психология (лек.) а. 531</div>
+    </td></tr>
+
+    <tr class="upper"><td class="day">ЧТ</td><td>
+        <div class="subject-cell practice" data-id="ucht1">✍️ ИнЯз (пр.) а. 513, 521</div>
+        <div class="subject-cell practice" data-id="ucht2">🏃‍♂️ Физ-ра</div>
+        <div class="subject-cell practice" data-id="ucht3">📖 ВОВ (фак.) а. 301</div>
+        <div class="subject-cell lecture" data-id="ucht4">🔧 Охр. тр. (лек.) а. 237</div>
+    </td></tr>
+
+    <tr class="lower hidden"><td class="day">ЧТ</td><td>
+        <div class="subject-cell lecture" data-id="lcht1">-</div>
+        <div class="subject-cell practice" data-id="lcht2">🏃‍♂️ Физ-ра</div>
+        <div class="subject-cell lecture" data-id="lcht3">📖 Инф. (лек.) а. 412/2</div>
+    </td></tr>
+
+    <tr class="upper"><td class="day">ПТ</td><td>
+        <div class="subject-cell lecture" data-id="upt1">-</div>
+        <div class="subject-cell lab" data-id="upt2">📖 Физика (лаб.) а. 303/2, 305/2</div>
+        <div class="subject-cell practice" data-id="upt3">📖 Высшмат (пр.) а. 534</div>
+        <div class="subject-cell practice" data-id="upt4">📖 Инф. Час а.210/2</div>
+    </td></tr>
+
+    <tr class="lower hidden"><td class="day">ПТ</td><td>
+        <div class="subject-cell lecture" data-id="lpt1">-</div>
+        <div class="subject-cell lab" data-id="lpt2">📖 Физика (лаб.) а. 303/2, 305/2</div>
+        <div class="subject-cell practice" data-id="lpt3">📖 Высшмат (пр.) а. 534</div>
+        <div class="subject-cell practice" data-id="lpt4">📖 Инф. Час а.210/2</div>
+    </td></tr>
+</table>
+
+<div class="modal" id="noteModal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">×</span>
+        <h3>Заметки по предмету</h3>
+        <div id="modalTitle" style="margin-bottom: 10px; font-weight: bold;"></div>
+        <textarea id="noteInput" placeholder="Оставьте свои заметки..."></textarea>
+        <button onclick="saveNote()" style="margin-top:10px">💾 Сохранить</button>
+    </div>
+</div>
+
+<script>
+    const toggle = document.getElementById('weekToggle');
+    toggle.addEventListener('change', () => {
+        document.querySelectorAll('.upper').forEach(row => row.classList.toggle('hidden'));
+        document.querySelectorAll('.lower').forEach(row => row.classList.toggle('hidden'));
+    });
+
+    const modal = document.getElementById('noteModal');
+    const noteInput = document.getElementById('noteInput');
+    const modalTitle = document.getElementById('modalTitle');
+    let currentCell = null;
+
+    document.querySelectorAll('.subject-cell').forEach(cell => {
+        const id = cell.dataset.id;
+        const savedNote = localStorage.getItem("note_" + id);
+
+        cell.addEventListener('click', () => {
+            currentCell = cell;
+            modalTitle.textContent = cell.textContent;
+            noteInput.value = savedNote || '';
+            modal.style.display = 'flex';
+        });
+    });
+
+    function saveNote() {
+        if (!currentCell) return;
+        const key = "note_" + currentCell.dataset.id;
+        localStorage.setItem(key, noteInput.value);
+        closeModal();
+    }
+
+    function closeModal() {
+        modal.style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
