@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>Расписание</title>
@@ -7,11 +7,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-main: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
+            --bg-main: #202124;
             --text-dark: #222;
             --card-bg: rgba(255, 255, 255, 0.07);
             --modal-bg: #f9f9f9;
-            --lecture-color: #d3c3f7;
+            --lecture-color: #ffe0e0;
             --practice-color: #bceef7;
             --lab-color: #bff2bf;
         }
@@ -219,9 +219,26 @@
                 font-size: 14px;
             }
         }
+        #settings {
+            background-image: url("https://cdn-icons-png.flaticon.com/512/109/109596.png");
+            background-size: cover;
+            mix-blend-mode: multiply;
+            float: right;
+            width: 50px;
+            height: 50px;
+            margin-top: -50px;
+            border: none;
+            animation: fadeInRow 0.3s ease-in;
+        }
+        .subject-time {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+            display: block;
+        }
     </style>
 </head>
-<body>
+<body onload="initializePage()">
 <header class="top-bar">📅 Моё расписание</header>
 <div class="toggle-container">
     <span class="toggle-label">Верхняя / Нижняя неделя</span>
@@ -230,75 +247,70 @@
         <span class="slider"></span>
     </label>
 </div>
-
+<button id="settings" onclick="openSettings()"></button>
 <table id="scheduleTable">
     <tr><th>День</th><th>Предметы</th></tr>
     <tr class="upper"><td class="day">ПН</td><td>
-        <div class="subject-cell practice" data-id="upn1">🏃‍♂️ Физ-ра</div>
-        <div class="subject-cell lecture" data-id="upn2">📖 Физика (лек.) а. 301/2</div>
-        <div class="subject-cell practice" data-id="upn3">✍️ Инженерная графика (пр.) а. 511, 902/7</div>
+        <div class="subject-cell practice" data-id="upn1" data-time="8:30–10:05">🏃‍♂️ Физ-ра</div>
+        <div class="subject-cell lecture" data-id="upn2" data-time="10:25–12:00">📖 Физика (лек.) а. 301/2</div>
+        <div class="subject-cell practice" data-id="upn3" data-time="12:30–14:05">✍️ Инженерная графика (пр.) а. 511, 902/7</div>
     </td></tr>
 
     <tr class="lower hidden"><td class="day">ПН</td><td>
-        <div class="subject-cell practice" data-id="lpn1">🏃‍♂️ Физ-ра</div>
-        <div class="subject-cell lecture" data-id="lpn2">📖 Физика (лек.) а. 301/2</div>
-        <div class="subject-cell practice" data-id="lpn3">✍️ Инженерная графика (пр.) а. 511, 902/7</div>
-        <div class="subject-cell practice" data-id="lpn4">✍️ Высшмат (пр.) а. 534</div>
+        <div class="subject-cell practice" data-id="lpn1" data-time="8:30–10:05">🏃‍♂️ Физ-ра</div>
+        <div class="subject-cell lecture" data-id="lpn2" data-time="10:25–12:00">📖 Физика (лек.) а. 301/2</div>
+        <div class="subject-cell practice" data-id="lpn3" data-time="12:30–14:05">✍️ Инженерная графика (пр.) а. 511, 902/7</div>
+        <div class="subject-cell practice" data-id="lpn4" data-time="14:20–15:55">✍️ Высшмат (пр.) а. 534</div>
     </td></tr>
 
     <tr class="upper"><td class="day">ВТ</td><td>
-        <div class="subject-cell lecture" data-id="uvt1">📖 Высшмат (лек.) а. 533</div>
-        <div class="subject-cell lecture" data-id="uvt2">📖 Теор. мех. (лек.) а. 509</div>
-        <div class="subject-cell lab" data-id="uvt3">🔧 Инф. (лаб.) (1-я подгр.) а. 410/4<br>Охр. тр. (лаб.) (2-я подгр.) а. 125</div>
-        <div class="subject-cell practice" data-id="uvt4">✍️ Теор. мех. (пр.) а. 425</div>
+        <div class="subject-cell lecture" data-id="uvt1" data-time="8:30–10:05">📖 Высшмат (лек.) а. 533</div>
+        <div class="subject-cell lecture" data-id="uvt2" data-time="10:25–12:00">📖 Теор. мех. (лек.) а. 509</div>
+        <div class="subject-cell lab" data-id="uvt3" data-time="12:30–14:05">🔧 Инф. (лаб.) (1-я подгр.) а. 410/4<br>Охр. тр. (лаб.) (2-я подгр.) а. 125</div>
+        <div class="subject-cell practice" data-id="uvt4" data-time="14:20–15:55">✍️ Теор. мех. (пр.) а. 425</div>
     </td></tr>
 
     <tr class="lower hidden"><td class="day">ВТ</td><td>
-        <div class="subject-cell practice" data-id="lvt1">✍️ Высшмат (пр.) а. 534</div>
-        <div class="subject-cell lecture" data-id="lvt2">📖 Теор. мех. (лек.) а. 509</div>
-        <div class="subject-cell lab" data-id="lvt3">🔧 Охр. тр. (лаб.) (1-я подгр.) а. 125<br>Инф. (лаб.) (2-я подгр.) а. 410/4</div>
-        <div class="subject-cell practice" data-id="lvt5">✍️ Теор. мех. (пр.) а. 425</div>
+        <div class="subject-cell practice" data-id="lvt1" data-time="8:30–10:05">✍️ Высшмат (пр.) а. 534</div>
+        <div class="subject-cell lecture" data-id="lvt2" data-time="10:25–12:00">📖 Теор. мех. (лек.) а. 509</div>
+        <div class="subject-cell lab" data-id="lvt3" data-time="12:30–14:05">🔧 Охр. тр. (лаб.) (1-я подгр.) а. 125<br>Инф. (лаб.) (2-я подгр.) а. 410/4</div>
+        <div class="subject-cell practice" data-id="lvt4" data-time="14:20–15:55">✍️ Теор. мех. (пр.) а. 425</div>
     </td></tr>
 
     <tr class="upper"><td class="day">СР</td><td>
-        <div class="subject-cell lecture" data-id="usr1">-</div>
-        <div class="subject-cell practice" data-id="usr2">✍️ Физика (пр.) а. 510/2 </div>
-        <div class="subject-cell practice" data-id="usr3">✍️ ИнЯз (пр.) а. 521, 529</div>
-        <div class="subject-cell lecture" data-id="usr4">📖 Соц. Психология (лек.) а. 531</div>
+        <div class="subject-cell practice" data-id="usr2" data-time="10:25–12:00">✍️ Физика (пр.) а. 510/2 </div>
+        <div class="subject-cell practice" data-id="usr3" data-time="12:30–14:05">✍️ ИнЯз (пр.) а. 521, 529</div>
+        <div class="subject-cell lecture" data-id="usr4" data-time="14:20–15:55">📖 Соц. Психология (лек.) а. 531</div>
     </td></tr>
 
     <tr class="lower hidden"><td class="day">СР</td><td>
-        <div class="subject-cell lecture" data-id="lsr1">-</div>
-        <div class="subject-cell practice" data-id="lsr2">✍️ Соц. Психология (пр.) а. 303</div>
-        <div class="subject-cell practice" data-id="lsr3">✍️ ИнЯз (пр.) а. 521, 529</div>
-        <div class="subject-cell lecture" data-id="lsr4">📖 Соц. Психология (лек.) а. 531</div>
+        <div class="subject-cell practice" data-id="lsr2" data-time="10:25–12:00">✍️ Соц. Психология (пр.) а. 303</div>
+        <div class="subject-cell practice" data-id="lsr3" data-time="12:30–14:05">✍️ ИнЯз (пр.) а. 521, 529</div>
+        <div class="subject-cell lecture" data-id="lsr4" data-time="14:20–15:55">📖 Соц. Психология (лек.) а. 531</div>
     </td></tr>
 
     <tr class="upper"><td class="day">ЧТ</td><td>
-        <div class="subject-cell practice" data-id="ucht1">✍️ ИнЯз (пр.) а. 513, 521</div>
-        <div class="subject-cell practice" data-id="ucht2">🏃‍♂️ Физ-ра</div>
-        <div class="subject-cell practice" data-id="ucht3">📖 ВОВ (фак.) а. 301</div>
-        <div class="subject-cell lecture" data-id="ucht4">🔧 Охр. тр. (лек.) а. 237</div>
+        <div class="subject-cell practice" data-id="ucht1" data-time="8:30–10:05">✍️ ИнЯз (пр.) а. 513, 521</div>
+        <div class="subject-cell practice" data-id="ucht2" data-time="10:25–12:00">🏃‍♂️ Физ-ра</div>
+        <div class="subject-cell practice" data-id="ucht3" data-time="12:30–14:05">📖 ВОВ (фак.) а. 301</div>
+        <div class="subject-cell lecture" data-id="ucht4" data-time="14:20–15:55">🔧 Охр. тр. (лек.) а. 237</div>
     </td></tr>
 
     <tr class="lower hidden"><td class="day">ЧТ</td><td>
-        <div class="subject-cell lecture" data-id="lcht1">-</div>
-        <div class="subject-cell practice" data-id="lcht2">🏃‍♂️ Физ-ра</div>
-        <div class="subject-cell lecture" data-id="lcht3">📖 Инф. (лек.) а. 412/2</div>
+        <div class="subject-cell practice" data-id="lcht2" data-time="10:25–12:00">🏃‍♂️ Физ-ра</div>
+        <div class="subject-cell lecture" data-id="lcht3" data-time="12:30–14:05">📖 Инф. (лек.) а. 412/2</div>
     </td></tr>
 
     <tr class="upper"><td class="day">ПТ</td><td>
-        <div class="subject-cell lecture" data-id="upt1">-</div>
-        <div class="subject-cell lab" data-id="upt2">📖 Физика (лаб.) а. 303/2, 305/2</div>
-        <div class="subject-cell practice" data-id="upt3">📖 Высшмат (пр.) а. 534</div>
-        <div class="subject-cell practice" data-id="upt4">📖 Инф. Час а.210/2</div>
+        <div class="subject-cell lab" data-id="upt2" data-time="10:25–12:00">📖 Физика (лаб.) а. 303/2, 305/2</div>
+        <div class="subject-cell practice" data-id="upt3" data-time="12:30–14:05">📖 Высшмат (пр.) а. 534</div>
+        <div class="subject-cell practice" data-id="upt4" data-time="14:20–15:55">📖 Инф. Час а.210/2</div>
     </td></tr>
 
     <tr class="lower hidden"><td class="day">ПТ</td><td>
-        <div class="subject-cell lecture" data-id="lpt1">-</div>
-        <div class="subject-cell lab" data-id="lpt2">📖 Физика (лаб.) а. 303/2, 305/2</div>
-        <div class="subject-cell practice" data-id="lpt3">📖 Высшмат (пр.) а. 534</div>
-        <div class="subject-cell practice" data-id="lpt4">📖 Инф. Час а.210/2</div>
+        <div class="subject-cell lab" data-id="lpt2" data-time="10:25–12:00">📖 Физика (лаб.) а. 303/2, 305/2</div>
+        <div class="subject-cell practice" data-id="lpt3" data-time="12:30–14:05">📖 Высшмат (пр.) а. 534</div>
+        <div class="subject-cell practice" data-id="lpt4" data-time="14:20–15:55">📖 Инф. Час а.210/2</div>
     </td></tr>
 </table>
 
@@ -311,13 +323,36 @@
         <button onclick="saveNote()" style="margin-top:10px">💾 Сохранить</button>
     </div>
 </div>
-<button onclick="scrollToToday()" style="position:fixed; bottom:20px; right:20px; z-index:100; background:#ab47bc; color:white; border:none; border-radius:8px; padding:10px 15px; box-shadow:0 4px 8px rgba(0,0,0,0.3)">Сегодня</button>
+<div class="modal" id="settingsModal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeSettings()">×</span>
+        <h3>Настройки</h3>
+        <div style="margin-bottom: 15px;">
+            <button onclick="showTab('themeTab')">🎨 Цветовая схема</button>
+            <!-- Можешь потом добавить другие вкладки -->
+        </div>
+        <div id="themeTab" class="settings-tab">
+            <label>Цвет лекций: <input type="color" id="lectureColorPicker"></label><br><br>
+            <label>Цвет практик: <input type="color" id="practiceColorPicker"></label><br><br>
+            <label>Цвет лаб: <input type="color" id="labColorPicker"></label><br><br>
+            <button onclick="saveColors()">💾 Сохранить цвета</button>
+        </div>
+    </div>
+</div>
 <script>
+    function initializePage() {
+        const savedWeek = localStorage.getItem('isLowerWeek') === 'true';
+        updateWeekDisplay(savedWeek);
+        scrollToToday();
+    }
+
     const toggle = document.getElementById('weekToggle');
     toggle.addEventListener('change', () => {
-        document.querySelectorAll('.upper').forEach(row => row.classList.toggle('hidden'));
-        document.querySelectorAll('.lower').forEach(row => row.classList.toggle('hidden'));
+        const isLower = toggle.checked;
+        localStorage.setItem('isLowerWeek', isLower); // сохраняем выбор
+        updateWeekDisplay(isLower);
     });
+
 
     const modal = document.getElementById('noteModal');
     const noteInput = document.getElementById('noteInput');
@@ -346,15 +381,80 @@
     function closeModal() {
         modal.style.display = 'none';
     }
+    function updateWeekDisplay(isLowerWeek) {
+        document.querySelectorAll('.upper').forEach(row => row.classList.toggle('hidden', isLowerWeek));
+        document.querySelectorAll('.lower').forEach(row => row.classList.toggle('hidden', !isLowerWeek));
+        toggle.checked = isLowerWeek;
+    }
 
     function scrollToToday() {
-        const days = ["ВС","ПН","ВТ","СР","ЧТ","ПТ","СБ"];
+        const days = ["ВС", "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ"];
         const today = new Date().getDay();
         const label = days[today] || "ПН";
-        const dayCell = [...document.querySelectorAll(".day")].find(cell => cell.textContent.trim() === label);
-        if (dayCell) dayCell.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-</script>
 
+        const matchingCells = [...document.querySelectorAll(".day")]
+            .filter(cell => cell.textContent.trim() === label);
+
+        matchingCells.forEach(cell => {
+            cell.style.backgroundColor = '#B64343FF';
+        });
+
+        // Прокручиваем к первой найденной (видимой) строке
+        const visibleRow = matchingCells.find(cell => !cell.closest("tr").classList.contains("hidden"));
+        if (visibleRow) {
+            visibleRow.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    }
+    function openSettings() {
+        document.getElementById('settingsModal').style.display = 'flex';
+        // Загрузка сохранённых цветов
+        document.getElementById('lectureColorPicker').value = localStorage.getItem('color_lecture') || '#d3c3f7';
+        document.getElementById('practiceColorPicker').value = localStorage.getItem('color_practice') || '#bceef7';
+        document.getElementById('labColorPicker').value = localStorage.getItem('color_lab') || '#bff2bf';
+    }
+
+    function closeSettings() {
+        document.getElementById('settingsModal').style.display = 'none';
+    }
+
+    function showTab(id) {
+        document.querySelectorAll('.settings-tab').forEach(tab => tab.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
+    }
+
+    function saveColors() {
+        const lectureColor = document.getElementById('lectureColorPicker').value;
+        const practiceColor = document.getElementById('practiceColorPicker').value;
+        const labColor = document.getElementById('labColorPicker').value;
+
+        document.documentElement.style.setProperty('--lecture-color', lectureColor);
+        document.documentElement.style.setProperty('--practice-color', practiceColor);
+        document.documentElement.style.setProperty('--lab-color', labColor);
+
+        localStorage.setItem('color_lecture', lectureColor);
+        localStorage.setItem('color_practice', practiceColor);
+        localStorage.setItem('color_lab', labColor);
+    }
+    function applySavedColors() {
+        const lectureColor = localStorage.getItem('color_lecture');
+        const practiceColor = localStorage.getItem('color_practice');
+        const labColor = localStorage.getItem('color_lab');
+
+        if (lectureColor) document.documentElement.style.setProperty('--lecture-color', lectureColor);
+        if (practiceColor) document.documentElement.style.setProperty('--practice-color', practiceColor);
+        if (labColor) document.documentElement.style.setProperty('--lab-color', labColor);
+    }
+    document.querySelectorAll('.subject-cell').forEach(cell => {
+        const time = cell.dataset.time;
+        if (time) {
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'subject-time';
+            timeSpan.textContent = time;
+            // Добавим перед первым элементом внутри ячейки
+            cell.insertBefore(timeSpan, cell.firstChild);
+        }
+    });
+
+</script>
 </body>
 </html>
